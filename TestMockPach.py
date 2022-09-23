@@ -38,15 +38,22 @@ class TestMockPach(unittest.TestCase):
         app = App()
         ret = app.run()
 
+    # OK works fine. query() in all the instances of DB class return 1000
+    @mock.patch("__main__.DB")
+    def test2(self,mock):        
+        mock.return_value.query.return_value = 1000
+        app = App()
+        ret = app.run()
+
     # NG: this patch only DB class object, but the instances. This test print out MagicMock.
     @mock.patch("__main__.DB",**{"query.return_value":1000})
-    def test2(self,mock):        
+    def test3(self,mock):        
         app = App()
         ret = app.run()
         
     # NG: this patch only the instances of DB class that passed in the 2nd argument of test3(). This test prints out MagicMock.
     @mock.patch("__main__.DB")
-    def test3(self,mock):        
+    def test4(self,mock):        
         att = {"query.return_value": 1000}
         mock.configure_mock(**att)
         app = App()
@@ -54,13 +61,13 @@ class TestMockPach(unittest.TestCase):
 
     # NG: this will raise error to fail. 
     @mock.patch("__main__.DB",new=AnotherMockDB,**{"query.return_value":1000})
-    def test4(self,mock):
+    def test5(self,mock):
         app = App()
         ret = app.run()
 
     # OK: this is another way to implement query() method. But it takes time to write MockDB if DB class is complicated. 
     @mock.patch("__main__.DB",new=MockDB)
-    def test5(self):
+    def test6(self):
         app = App()
         ret = app.run()
 
